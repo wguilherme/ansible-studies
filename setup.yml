@@ -8,11 +8,3 @@
       package:
         name: cowsay
         state: present
-
-    - name: Test cowsay
-      command: cowsay "Hello from {{ inventory_hostname }}"
-      register: cowsay_output
-
-    - name: Display cowsay output
-      debug:
-        var: cowsay_output.stdout_lines
