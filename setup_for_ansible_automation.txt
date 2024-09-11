@@ -1,0 +1,10 @@
+sudo apt update && sudo apt install -y openssh-server && \
+sudo mkdir -p /var/run/sshd && \
+sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+sudo sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
+sudo systemctl restart ssh || sudo service ssh restart && \
+sudo systemctl enable ssh || sudo update-rc.d ssh defaults && \
+if command -v ufw >/dev/null 2>&1; then sudo ufw allow ssh && sudo ufw --force enable; else echo "ufw não está instalado. Pulando configuração do firewall."; fi && \
+echo "Endereço IP do sistema:" && \
+ip addr show | grep inet | grep -v inet6 | grep -v "127.0.0.1" | awk '{print $2}' | cut -d "/" -f1 && \
+echo "Configuração do SSH concluída."

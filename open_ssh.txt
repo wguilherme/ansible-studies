@@ -1,0 +1,18 @@
+sudo apt update
+sudo apt install nano
+sudo apt install openssh-server
+sudo systemctl status ssh
+sudo systemctl start ssh
+sudo systemctl enable ssh
+sudo apt install ufw
+sudo ufw allow ssh
+sudo ufw enable
+sudo adduser wguilherme
+sudo usermod -aG sudo wguilherme
+
+sudo nano /etc/ssh/sshd_config
+  PasswordAuthentication yes
+  PermitRootLogin no
+
+
+hostname -I

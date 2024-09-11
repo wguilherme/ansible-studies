@@ -4,11 +4,15 @@
   become: yes # Isso permite executar comandos com privilégios de superusuário
 
   tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-
-    - name: Install Vim
-      apt:
-        name: vim
+    - name: Install cowsay
+      package:
+        name: cowsay
         state: present
+
+    - name: Test cowsay
+      command: cowsay "Hello from {{ inventory_hostname }}"
+      register: cowsay_output
+
+    - name: Display cowsay output
+      debug:
+        var: cowsay_output.stdout_lines
