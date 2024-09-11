@@ -1,0 +1,8 @@
+O sshpass é necessário quando você usa autenticação baseada em senha com Ansible.
+Para usar uma conexão SSH com senha, é necessáro instalar o  `sshpass`
+
+MacOS:
+brew install hudochenkov/sshpass/sshpass
+
+Ubuntu/Debian
+sudo apt-get install sshpass
