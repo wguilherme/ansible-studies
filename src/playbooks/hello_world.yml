@@ -1,11 +1,14 @@
 ---
-- name: Setup Raspberry PI hosts
-  hosts: rpi2
+- name: Hello World Playbook
+  hosts: rpis
   become: true
-  vars_files: # Corrigido: era 'var_files', agora é 'vars_files'
-    - ../../var_files.yml
+  vars_files: "vars.yml"
 
   tasks:
+    - name: Print hello world
+      debug:
+        msg: "Hello, World! I'm {{ inventory_hostname }} with IP {{ ansible_host }}"
+
     - name: Install cowsay
       package:
         name: cowsay
