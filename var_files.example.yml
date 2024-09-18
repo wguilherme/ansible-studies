@@ -1,0 +1,6 @@
+---
+# HOST 1
+host1:
+  host_ip: "127.0.0.1"
+  host_user: "user"
+  host_password: "password"

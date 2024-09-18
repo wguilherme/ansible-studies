@@ -1,0 +1,10 @@
+Instala o cowsay (como no seu playbook original).
+Instala os pacotes necessários (curl e ca-certificates).
+Baixa o script de instalação do k3s.
+Executa o script de instalação do k3s.
+Habilita e inicia o serviço k3s.
+Aguarda até que o k3s esteja pronto.
+Copia o arquivo de configuração do k3s para o diretório home do usuário.
+Instala o kubectl.
+Testa a instalação do k3s executando kubectl get nodes.
+Exibe a saída do comando kubectl.

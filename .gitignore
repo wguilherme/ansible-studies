@@ -1,2 +1,2 @@
 .env
-inventory_local.ini
+vars_files.yml

@@ -1,7 +1,9 @@
 ---
 - name: Setup Raspberry Pi
-  hosts: raspberry_pi
-  become: yes # Isso permite executar comandos com privilégios de superusuário
+  hosts: rpi2
+  become: yes
+  var_files:
+    - ../var_files.yml
 
   tasks:
     - name: Install cowsay

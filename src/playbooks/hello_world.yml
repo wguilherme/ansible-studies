@@ -1,0 +1,12 @@
+---
+- name: Setup Raspberry PI hosts
+  hosts: rpi2
+  become: true
+  vars_files: # Corrigido: era 'var_files', agora é 'vars_files'
+    - ../../var_files.yml
+
+  tasks:
+    - name: Install cowsay
+      package:
+        name: cowsay
+        state: present
