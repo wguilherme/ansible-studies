@@ -1,0 +1,101 @@
+---
+- name: K3s Cluster Playbook
+  hosts: rpis
+  become: true
+  vars_files: "vars_k3s_cluster.yml"
+
+  tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - sudo
+        state: present
+
+    - name: Set hostname
+      hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Ensure hosts file is updated
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ hostvars[item]['ansible_host'] }} {{ item }}"
+      loop: "{{ groups['all'] }}"
+
+    - name: Disable swap
+      command: swapoff -a
+      changed_when: false
+
+    - name: Remove swap entry from /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        regexp: "^/swap"
+        state: absent
+
+    - name: Check if memory cgroup is already enabled
+      command: grep -E "cgroup_memory=1|cgroup_enable=memory" /boot/cmdline.txt
+      register: cgroup_check
+      changed_when: false
+      failed_when: false
+
+    - name: Add memory cgroup parameters to cmdline.txt
+      lineinfile:
+        path: /boot/cmdline.txt
+        backrefs: yes
+        regexp: "^((?!.*cgroup_memory=1)(?!.*cgroup_enable=memory).*)$"
+        line: '\1 cgroup_memory=1 cgroup_enable=memory'
+      when: cgroup_check.rc != 0
+      register: cmdline_updated
+
+    - name: Reboot Raspberry Pi if cmdline.txt was changed
+      reboot:
+      when: cmdline_updated.changed | default(false)
+
+    - name: Wait for Raspberry Pi to come back online
+      wait_for_connection:
+        delay: 60
+        timeout: 300
+      when: cmdline_updated.changed | default(false)
+
+    - name: Install K3s on the primary master node
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s_version }}" sh -s - server {{ k3s_server_args }}
+      args:
+        creates: /usr/local/bin/k3s
+      when: inventory_hostname == primary_master
+
+    - name: Get node-token from primary master
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: node_token
+      when: inventory_hostname == primary_master
+
+    - name: Store node-token
+      set_fact:
+        k3s_node_token: "{{ node_token['content'] | b64decode | regex_replace('\n', '') }}"
+      when: inventory_hostname == primary_master
+
+    - name: Get primary master IP
+      set_fact:
+        primary_master_ip: "{{ hostvars[primary_master]['ansible_host'] }}"
+
+    - name: Install K3s on additional master node
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s_version }}" K3S_TOKEN="{{ hostvars[primary_master]['k3s_node_token'] }}" sh -s - server --server https://{{ primary_master_ip }}:6443
+      args:
+        creates: /usr/local/bin/k3s
+      when: inventory_hostname != primary_master
+
+    - name: Wait for nodes to be ready
+      command: kubectl get nodes
+      register: kubectl_get_nodes
+      until: kubectl_get_nodes.rc == 0
+      retries: 10
+      delay: 30
+      changed_when: false
+      when: inventory_hostname == primary_master

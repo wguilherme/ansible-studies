@@ -1,5 +1,8 @@
 {
   "yaml.schemas": {
-    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/vars.json": "file:///Users/withneyguilherme/Projects/personal/ansible-studies/src/playbooks/vars.yml"
+    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/vars.json": [
+      "file:///Users/withneyguilherme/Projects/personal/ansible-studies/src/playbooks/vars.yml",
+      "file:///Users/withneyguilherme/Projects/personal/ansible-studies/src/playbooks/vars_k3s_cluster.yml"
+    ]
   }
 }
