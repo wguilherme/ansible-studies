@@ -1,0 +1,10 @@
+# Instalar SSH
+sudo apt update
+sudo apt install openssh-server -y
+
+# Iniciar o serviço
+sudo systemctl start ssh
+sudo systemctl enable ssh
+
+# Verificar se está rodando
+sudo systemctl status ssh

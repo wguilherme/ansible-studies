@@ -1,0 +1,7 @@
+all:
+  hosts:
+    rancher_server:
+      ansible_host: "198.19.249.170"
+      ansible_user: withneyguilherme
+      ansible_password: root
+      ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
